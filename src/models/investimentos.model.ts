@@ -72,23 +72,15 @@ Promise<boolean> => {
 
 export const criaNovaCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
 Promise<boolean> => {
-  let numRandom = Math.ceil(Math.random() * 999);
-  await connection.execute(
+  const [novaCarteira]: any = await connection.execute(
     `INSERT INTO investimentoAcoes.carteiras
     (codCliente, codAtivo, qtdeAtivo, versao)
     VALUES (?, ?, ?, ?)`,
-    [codCliente, codAtivo, qtdeAtivo, numRandom]
+    [codCliente, codAtivo, qtdeAtivo, 1]
   );
 
-  const versao = await buscarVersaoCarteira(codCliente, codAtivo);
 
-  if (versao === numRandom) {
-    await connection.execute('COMMIT;');
-    return true;
-  } else {
-    await connection.execute('ROLLBACK;');
-    return false;
-  };
+  return novaCarteira.affectedRows === 1 ? true : false
 };
 
 export const adicionaCompraHistorico = async (codCliente: number, 
