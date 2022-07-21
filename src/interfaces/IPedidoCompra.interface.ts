@@ -1,7 +1,7 @@
-interface IPedidoCompra {
+interface IPedido {
   codCliente: number,
   codAtivo: number,
   qtdeAtivo: number,
 }
 
-export default IPedidoCompra;
+export default IPedido;

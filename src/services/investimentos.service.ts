@@ -1,13 +1,16 @@
-import IPedidoCompra from '../interfaces/IPedidoCompra.interface';
+import IPedido from '../interfaces/IPedidoCompra.interface';
 import IMessage from '../interfaces/IMessage.interface';
-import { buscaSaldoConta, atualizaSaldoConta } from '../models/conta.model';
+import { buscaSaldoConta, subtrairSaldoConta, adicionarSaldoConta } from '../models/conta.model';
 import { qtdeAtivoDisponivelCorretora, 
   calculaValorTotal,
   atualizaCarteira,
   adicionaCompraHistorico,
+  buscarCarteiraPorClienteEAtivo,
+  subtrairQtdeAtivoCarteira,
 } from '../models/investimentos.model';
+import ICarteira from '../interfaces/ICarteira.interface';
 
-export const comprarAtivo = async (pedidoCompra: IPedidoCompra):
+export const comprarAtivo = async (pedidoCompra: IPedido):
 Promise<IMessage> => {
   const { codCliente, codAtivo, qtdeAtivo } = pedidoCompra;
   const qtdeAtivoDisponivel = await qtdeAtivoDisponivelCorretora(codAtivo);
@@ -22,11 +25,29 @@ Promise<IMessage> => {
   const carteiraAtualizada = await atualizaCarteira(codCliente, codAtivo, qtdeAtivo);
   
   if (carteiraAtualizada) {
-    await atualizaSaldoConta(codCliente, valorTotal);
+    await subtrairSaldoConta(codCliente, valorTotal);
     await adicionaCompraHistorico(codCliente, codAtivo, qtdeAtivo, valorTotal);
     return { status: 200, message: 'Compra efetuada com sucesso'}
   } else {
     return { status: 406, message: 'Não foi possível realizar a compra do ativo' }
   }
-  
 };
+
+export const venderAtivo = async (pedidoVenda: IPedido) => {
+  const { codCliente, codAtivo, qtdeAtivo } = pedidoVenda;
+  const carteira: ICarteira[] = await buscarCarteiraPorClienteEAtivo(codCliente, codAtivo);
+
+  if (carteira.length === 0) return { status: 406, message: 'Carteira não encontrada' };
+
+  if (carteira[0].qtdeAtivo < qtdeAtivo) return { status: 406, message: 'Quantidade de ativo insuficiente para vender' };
+
+  const carteiraAtualizada = await subtrairQtdeAtivoCarteira(codCliente, codAtivo, qtdeAtivo);
+  const valorTotal = await calculaValorTotal(codAtivo, qtdeAtivo);
+
+  if (carteiraAtualizada) {
+    await adicionarSaldoConta(codCliente, valorTotal);
+    return { status: 200, message: 'Venda efetuada com sucesso'}
+  } else {
+    return { status: 406, message: 'Não foi possível realizar a compra do ativo' }
+  }
+}

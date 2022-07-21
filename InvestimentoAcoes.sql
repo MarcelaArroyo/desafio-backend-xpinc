@@ -19,12 +19,11 @@ CREATE TABLE `ativos` (
 ) ENGINE=InnoDB;
 
 CREATE TABLE `carteiras` (
-	`codCarteira` integer NOT NULL AUTO_INCREMENT,
 	`codCliente` integer NOT NULL,
     `codAtivo` integer NOT NULL,
     `qtdeAtivo` integer NOT NULL,
     `versao` integer NOT NULL,
-    PRIMARY KEY (`codCarteira`),
+    PRIMARY KEY (`codCliente`, `codAtivo`),
 	FOREIGN KEY (`codCliente`) REFERENCES `clientes`(`codCliente`),
     FOREIGN KEY (`codAtivo`) REFERENCES `ativos`(`codAtivo`)
 ) ENGINE=InnoDB;
