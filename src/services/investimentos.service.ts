@@ -7,6 +7,7 @@ import { qtdeAtivoDisponivelCorretora,
   adicionaCompraHistorico,
   buscarCarteiraPorClienteEAtivo,
   subtrairQtdeAtivoCarteira,
+  adicionaVendaHistorico,
 } from '../models/investimentos.model';
 import ICarteira from '../interfaces/ICarteira.interface';
 
@@ -46,8 +47,9 @@ export const venderAtivo = async (pedidoVenda: IPedido) => {
 
   if (carteiraAtualizada) {
     await adicionarSaldoConta(codCliente, valorTotal);
+    await adicionaVendaHistorico(codCliente, codAtivo, qtdeAtivo, valorTotal);
     return { status: 200, message: 'Venda efetuada com sucesso'}
   } else {
-    return { status: 406, message: 'Não foi possível realizar a compra do ativo' }
+    return { status: 406, message: 'Não foi possível realizar a venda do ativo' }
   }
 }
