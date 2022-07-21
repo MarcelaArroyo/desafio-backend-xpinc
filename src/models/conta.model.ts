@@ -1,3 +1,4 @@
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import connection from "./connection";
 
 export const buscaSaldoConta = async (codCliente: number):
@@ -13,7 +14,7 @@ Promise<number> => {
 
 const buscarVersaoConta = async (codCliente: number):
 Promise<number> => {
-  const [versao]: any = await connection.execute(
+  const [versao] = await connection.execute<RowDataPacket[]>(
     `SELECT versao FROM investimentoAcoes.contasInvestimento
     WHERE codCliente = ?`,
     [codCliente]
@@ -26,7 +27,7 @@ export const subtrairSaldoConta = async (codCliente: number, valorTotal: number)
 Promise<boolean> => {
   const versao = await buscarVersaoConta(codCliente);
 
-  const [rows]: any = await connection.execute(
+  const [rows] = await connection.execute<ResultSetHeader>(
     `UPDATE investimentoAcoes.contasInvestimento
     SET saldo = (saldo - ?), versao = (versao + 1)
     WHERE codCliente = ? AND versao = ?`,
@@ -46,7 +47,7 @@ export const adicionarSaldoConta = async (codCliente: number, valorTotal: number
 Promise<boolean> => {
   const versao = await buscarVersaoConta(codCliente);
 
-  const [rows]: any = await connection.execute(
+  const [rows] = await connection.execute<ResultSetHeader>(
     `UPDATE investimentoAcoes.contasInvestimento
     SET saldo = (saldo + ?), versao = (versao + 1)
     WHERE codCliente = ? AND versao = ?`,
