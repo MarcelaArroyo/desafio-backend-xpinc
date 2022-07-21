@@ -34,7 +34,8 @@ Promise<IMessage> => {
   }
 };
 
-export const venderAtivo = async (pedidoVenda: IPedido) => {
+export const venderAtivo = async (pedidoVenda: IPedido):
+Promise<IMessage> => {
   const { codCliente, codAtivo, qtdeAtivo } = pedidoVenda;
   const carteira: ICarteira[] = await buscarCarteiraPorClienteEAtivo(codCliente, codAtivo);
 
