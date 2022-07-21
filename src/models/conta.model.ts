@@ -12,6 +12,17 @@ Promise<number> => {
   return +saldo[0].saldo;
 };
 
+export const buscaConta = async (codCliente: number):
+Promise<RowDataPacket[]> => {
+  const [conta] = await connection.execute<RowDataPacket[]>(
+    `SELECT codCliente, saldo FROM investimentoAcoes.contasInvestimento
+    WHERE codCliente = ?`,
+    [codCliente]
+  );
+  
+  return conta;
+};
+
 const buscarVersaoConta = async (codCliente: number):
 Promise<number> => {
   const [versao] = await connection.execute<RowDataPacket[]>(
