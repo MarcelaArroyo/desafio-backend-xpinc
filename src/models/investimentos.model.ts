@@ -115,10 +115,23 @@ Promise<boolean> => {
 export const adicionaCompraHistorico = async (codCliente: number, 
   codAtivo: number, qtdeAtivo: number, valorTotal: number):
   Promise<boolean> => {
-  const [rows]: any = await connection.execute<ResultSetHeader>(
+  const [rows] = await connection.execute<ResultSetHeader>(
     `INSERT INTO investimentoAcoes.historicoTransacao
     (codCliente, codAtivo, qtdeAtivo, tipoTransacao, valor, data)
     VALUES (?, ?, ?, 'compra', ?, ?)`,
+    [codCliente, codAtivo, qtdeAtivo, valorTotal, new Date]
+  );
+
+  return rows.affectedRows === 1 ? true : false;
+};
+
+export const adicionaVendaHistorico = async (codCliente: number, 
+  codAtivo: number, qtdeAtivo: number, valorTotal: number):
+  Promise<boolean> => {
+  const [rows] = await connection.execute<ResultSetHeader>(
+    `INSERT INTO investimentoAcoes.historicoTransacao
+    (codCliente, codAtivo, qtdeAtivo, tipoTransacao, valor, data)
+    VALUES (?, ?, ?, 'venda', ?, ?)`,
     [codCliente, codAtivo, qtdeAtivo, valorTotal, new Date]
   );
 

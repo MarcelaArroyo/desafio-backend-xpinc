@@ -1,4 +1,4 @@
-import IPedido from '../interfaces/IPedidoCompra.interface';
+import IPedido from '../interfaces/IPedido.interface';
 import IMessage from '../interfaces/IMessage.interface';
 import { buscaSaldoConta, subtrairSaldoConta, adicionarSaldoConta } from '../models/conta.model';
 import { qtdeAtivoDisponivelCorretora, 
@@ -7,6 +7,7 @@ import { qtdeAtivoDisponivelCorretora,
   adicionaCompraHistorico,
   buscarCarteiraPorClienteEAtivo,
   subtrairQtdeAtivoCarteira,
+  adicionaVendaHistorico,
 } from '../models/investimentos.model';
 import ICarteira from '../interfaces/ICarteira.interface';
 
@@ -33,7 +34,8 @@ Promise<IMessage> => {
   }
 };
 
-export const venderAtivo = async (pedidoVenda: IPedido) => {
+export const venderAtivo = async (pedidoVenda: IPedido):
+Promise<IMessage> => {
   const { codCliente, codAtivo, qtdeAtivo } = pedidoVenda;
   const carteira: ICarteira[] = await buscarCarteiraPorClienteEAtivo(codCliente, codAtivo);
 
@@ -46,8 +48,9 @@ export const venderAtivo = async (pedidoVenda: IPedido) => {
 
   if (carteiraAtualizada) {
     await adicionarSaldoConta(codCliente, valorTotal);
+    await adicionaVendaHistorico(codCliente, codAtivo, qtdeAtivo, valorTotal);
     return { status: 200, message: 'Venda efetuada com sucesso'}
   } else {
-    return { status: 406, message: 'Não foi possível realizar a compra do ativo' }
+    return { status: 406, message: 'Não foi possível realizar a venda do ativo' }
   }
 }
