@@ -3,7 +3,7 @@ import connection from "./connection";
 
 export const buscaSaldoConta = async (codCliente: number):
 Promise<number> => {
-  const [saldo]: any = await connection.execute(
+  const [saldo] = await connection.execute<RowDataPacket[]>(
     `SELECT saldo FROM investimentoAcoes.contasInvestimento
     WHERE codCliente = ?`,
     [codCliente]
