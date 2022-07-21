@@ -1,5 +1,5 @@
 // import { ResultSetHeader, RowDataPacket } from "mysql2";
-import IQtdeAtivo from "../interfaces/IMessage.interface";
+import ICarteira from "../interfaces/ICarteira.interface";
 import connection from "./connection";
 
 export const qtdeAtivoDisponivelCorretora = async (codAtivo: number):
@@ -24,16 +24,24 @@ Promise<number> => {
   return +valorTotal[0].valorTotal;
 };
 
-export const atualizaCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
-Promise<boolean> => {
-  const [carteiraExiste]: any = await connection.execute(
+export const buscarCarteiraPorClienteEAtivo = async (codCliente: number, codAtivo: number):
+Promise<ICarteira[]> => {
+  const [carteira] = await connection.execute(
     `SELECT * FROM investimentoAcoes.carteiras
     WHERE codCliente = ? AND codAtivo = ?`,
     [codCliente, codAtivo]
   );
+  
+  return carteira as ICarteira[];
+}
 
-  if (carteiraExiste.length !== 0) {
-    return await atualizaQtdeAtivoCarteira (codCliente, codAtivo, qtdeAtivo);
+export const atualizaCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
+Promise<boolean> => {
+  const carteiraExiste: ICarteira[] = await buscarCarteiraPorClienteEAtivo(codCliente, codAtivo);
+  
+
+  if (carteiraExiste.length === 1) {
+    return await adicionaQtdeAtivoCarteira (codCliente, codAtivo, qtdeAtivo);
   } else {
     return await criaNovaCarteira(codCliente, codAtivo, qtdeAtivo);
   }
@@ -50,13 +58,33 @@ Promise<number> => {
   return +versao[0].versao;
 };
 
-export const atualizaQtdeAtivoCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
+export const adicionaQtdeAtivoCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
 Promise<boolean> => {
   const versao = await buscarVersaoCarteira(codCliente, codAtivo);
 
   const [rows]: any = await connection.execute(
     `UPDATE investimentoAcoes.carteiras
     SET qtdeAtivo = (qtdeAtivo + ?), versao = (versao + 1)
+    WHERE codCliente = ? AND codAtivo = ? AND versao = ?`,
+    [qtdeAtivo, codCliente, codAtivo, versao]
+  );
+
+  if (rows.affectedRows === 1) {
+    await connection.execute('COMMIT;');
+    return true;
+  } else {
+    await connection.execute('ROLLBACK;');
+    return false;
+  };
+};
+
+export const subtrairQtdeAtivoCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
+Promise<boolean> => {
+  const versao = await buscarVersaoCarteira(codCliente, codAtivo);
+
+  const [rows]: any = await connection.execute(
+    `UPDATE investimentoAcoes.carteiras
+    SET qtdeAtivo = (qtdeAtivo - ?), versao = (versao + 1)
     WHERE codCliente = ? AND codAtivo = ? AND versao = ?`,
     [qtdeAtivo, codCliente, codAtivo, versao]
   );
