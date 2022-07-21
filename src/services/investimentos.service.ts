@@ -1,4 +1,4 @@
-import IPedido from '../interfaces/IPedidoCompra.interface';
+import IPedido from '../interfaces/IPedido.interface';
 import IMessage from '../interfaces/IMessage.interface';
 import { buscaSaldoConta, subtrairSaldoConta, adicionarSaldoConta } from '../models/conta.model';
 import { qtdeAtivoDisponivelCorretora, 
