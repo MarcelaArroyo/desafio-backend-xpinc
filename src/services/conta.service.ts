@@ -1,5 +1,6 @@
+import IConta from '../interfaces/IConta';
 import IMessage from '../interfaces/IMessage.interface';
-import { adicionarSaldoConta, buscaSaldoConta, subtrairSaldoConta } from '../models/conta.model';
+import { adicionarSaldoConta, buscaSaldoConta, subtrairSaldoConta, buscaConta } from '../models/conta.model';
 
 export const contaDeposito = async (codCliente: number, valor: number):
 Promise<IMessage> => {
@@ -27,4 +28,16 @@ Promise<IMessage> => {
   } else {
     return { status: 404, message: 'Erro ao tentar fazer o saque. Tente novamente'};
   };
+}
+
+export const contaCliente = async (codCliente: number):
+Promise<IConta | undefined> => {
+  const conta = await buscaConta(codCliente);
+
+  if (conta.length === 0) return undefined;
+
+  return {
+    codCliente: conta[0].codCliente,
+    saldo: +conta[0].saldo
+  }
 }
