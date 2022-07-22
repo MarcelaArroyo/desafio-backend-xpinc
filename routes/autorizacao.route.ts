@@ -3,6 +3,6 @@ import { controllerAutorizarLogin } from '../src/controllers/autorizacao.control
 
 const routes = Router();
 
-routes.post('/login', controllerAutorizarLogin);
+routes.post('/auth', controllerAutorizarLogin);
 
 export default routes;
