@@ -1,9 +1,8 @@
-// import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import ICarteira from "../interfaces/ICarteira.interface";
 import connection from "./connection";
 
-export const qtdeAtivoDisponivelCorretora = async (codAtivo: number):
+const qtdeAtivoDisponivelCorretora = async (codAtivo: number):
 Promise<number> => {
   const [qtdeAtivoDisponivel] = await connection.execute<RowDataPacket[]>(
     `SELECT qtdeAtivo FROM investimentoAcoes.ativos
@@ -14,7 +13,7 @@ Promise<number> => {
   return +qtdeAtivoDisponivel[0].qtdeAtivo as number;
 };
 
-export const calculaValorTotal = async (codAtivo: number, qtdeAtivo: number):
+const calculaValorTotal = async (codAtivo: number, qtdeAtivo: number):
 Promise<number> => {
   const [valorTotal] = await connection.execute<RowDataPacket[]>(
     `SELECT valor * ? as 'valorTotal' FROM investimentoAcoes.ativos
@@ -25,7 +24,7 @@ Promise<number> => {
   return +valorTotal[0].valorTotal;
 };
 
-export const buscarCarteiraPorClienteEAtivo = async (codCliente: number, codAtivo: number):
+const buscarCarteiraPorClienteEAtivo = async (codCliente: number, codAtivo: number):
 Promise<ICarteira[]> => {
   const [carteira] = await connection.execute(
     `SELECT * FROM investimentoAcoes.carteiras
@@ -36,7 +35,7 @@ Promise<ICarteira[]> => {
   return carteira as ICarteira[];
 }
 
-export const atualizaCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
+const atualizaCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
 Promise<boolean> => {
   const carteiraExiste: ICarteira[] = await buscarCarteiraPorClienteEAtivo(codCliente, codAtivo);
   
@@ -59,18 +58,18 @@ Promise<number> => {
   return +versao[0].versao;
 };
 
-export const adicionaQtdeAtivoCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
+const adicionaQtdeAtivoCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
 Promise<boolean> => {
   const versao = await buscarVersaoCarteira(codCliente, codAtivo);
 
-  const [rows] = await connection.execute<ResultSetHeader>(
+  const [atualizaCarteira] = await connection.execute<ResultSetHeader>(
     `UPDATE investimentoAcoes.carteiras
     SET qtdeAtivo = (qtdeAtivo + ?), versao = (versao + 1)
     WHERE codCliente = ? AND codAtivo = ? AND versao = ?`,
     [qtdeAtivo, codCliente, codAtivo, versao]
   );
 
-  if (rows.affectedRows === 1) {
+  if (atualizaCarteira.affectedRows === 1) {
     await connection.execute('COMMIT;');
     return true;
   } else {
@@ -79,18 +78,18 @@ Promise<boolean> => {
   };
 };
 
-export const subtrairQtdeAtivoCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
+const subtrairQtdeAtivoCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
 Promise<boolean> => {
   const versao = await buscarVersaoCarteira(codCliente, codAtivo);
 
-  const [rows] = await connection.execute<ResultSetHeader>(
+  const [atualizaCarteira] = await connection.execute<ResultSetHeader>(
     `UPDATE investimentoAcoes.carteiras
     SET qtdeAtivo = (qtdeAtivo - ?), versao = (versao + 1)
     WHERE codCliente = ? AND codAtivo = ? AND versao = ?`,
     [qtdeAtivo, codCliente, codAtivo, versao]
   );
 
-  if (rows.affectedRows === 1) {
+  if (atualizaCarteira.affectedRows === 1) {
     await connection.execute('COMMIT;');
     return true;
   } else {
@@ -99,9 +98,9 @@ Promise<boolean> => {
   };
 };
 
-export const criaNovaCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
+const criaNovaCarteira = async (codCliente: number, codAtivo: number, qtdeAtivo: number):
 Promise<boolean> => {
-  const [rows] = await connection.execute<ResultSetHeader>(
+  const [novaCarteira] = await connection.execute<ResultSetHeader>(
     `INSERT INTO investimentoAcoes.carteiras
     (codCliente, codAtivo, qtdeAtivo, versao)
     VALUES (?, ?, ?, ?)`,
@@ -109,31 +108,42 @@ Promise<boolean> => {
   );
 
 
-  return rows.affectedRows === 1 ? true : false
+  return novaCarteira.affectedRows === 1 ? true : false
 };
 
-export const adicionaCompraHistorico = async (codCliente: number, 
+const adicionaCompraHistorico = async (codCliente: number, 
   codAtivo: number, qtdeAtivo: number, valorTotal: number):
   Promise<boolean> => {
-  const [rows] = await connection.execute<ResultSetHeader>(
+  const [novoHistorico] = await connection.execute<ResultSetHeader>(
     `INSERT INTO investimentoAcoes.historicoTransacao
     (codCliente, codAtivo, qtdeAtivo, tipoTransacao, valor, data)
     VALUES (?, ?, ?, 'compra', ?, ?)`,
     [codCliente, codAtivo, qtdeAtivo, valorTotal, new Date]
   );
 
-  return rows.affectedRows === 1 ? true : false;
+  return novoHistorico.affectedRows === 1 ? true : false;
 };
 
-export const adicionaVendaHistorico = async (codCliente: number, 
+const adicionaVendaHistorico = async (codCliente: number, 
   codAtivo: number, qtdeAtivo: number, valorTotal: number):
   Promise<boolean> => {
-  const [rows] = await connection.execute<ResultSetHeader>(
+  const [novoHistorico] = await connection.execute<ResultSetHeader>(
     `INSERT INTO investimentoAcoes.historicoTransacao
     (codCliente, codAtivo, qtdeAtivo, tipoTransacao, valor, data)
     VALUES (?, ?, ?, 'venda', ?, ?)`,
     [codCliente, codAtivo, qtdeAtivo, valorTotal, new Date]
   );
 
-  return rows.affectedRows === 1 ? true : false;
+  return novoHistorico.affectedRows === 1 ? true : false;
 };
+
+export default {
+  qtdeAtivoDisponivelCorretora,
+  calculaValorTotal,
+  buscarCarteiraPorClienteEAtivo,
+  atualizaCarteira,
+  adicionaQtdeAtivoCarteira,
+  subtrairQtdeAtivoCarteira,
+  adicionaCompraHistorico,
+  adicionaVendaHistorico,
+}

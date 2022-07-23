@@ -1,7 +1,7 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import connection from "./connection";
 
-export const buscaSaldoConta = async (codCliente: number):
+const buscaSaldoConta = async (codCliente: number):
 Promise<number> => {
   const [saldo] = await connection.execute<RowDataPacket[]>(
     `SELECT saldo FROM investimentoAcoes.contasInvestimento
@@ -12,7 +12,7 @@ Promise<number> => {
   return +saldo[0].saldo;
 };
 
-export const buscaConta = async (codCliente: number):
+const buscaConta = async (codCliente: number):
 Promise<RowDataPacket[]> => {
   const [conta] = await connection.execute<RowDataPacket[]>(
     `SELECT codCliente, saldo FROM investimentoAcoes.contasInvestimento
@@ -34,18 +34,18 @@ Promise<number> => {
   return +versao[0].versao;
 };
 
-export const subtrairSaldoConta = async (codCliente: number, valorTotal: number):
+const subtrairSaldoConta = async (codCliente: number, valorTotal: number):
 Promise<boolean> => {
   const versao = await buscarVersaoConta(codCliente);
 
-  const [rows] = await connection.execute<ResultSetHeader>(
+  const [atualizaSaldo] = await connection.execute<ResultSetHeader>(
     `UPDATE investimentoAcoes.contasInvestimento
     SET saldo = (saldo - ?), versao = (versao + 1)
     WHERE codCliente = ? AND versao = ?`,
     [valorTotal, codCliente, versao]
   );
 
-  if (rows.affectedRows === 1) {
+  if (atualizaSaldo.affectedRows === 1) {
     await connection.execute('COMMIT;');
     return true;
   } else {
@@ -54,18 +54,18 @@ Promise<boolean> => {
   };
 };
 
-export const adicionarSaldoConta = async (codCliente: number, valorTotal: number):
+const adicionarSaldoConta = async (codCliente: number, valorTotal: number):
 Promise<boolean> => {
   const versao = await buscarVersaoConta(codCliente);
 
-  const [rows] = await connection.execute<ResultSetHeader>(
+  const [atualizaSaldo] = await connection.execute<ResultSetHeader>(
     `UPDATE investimentoAcoes.contasInvestimento
     SET saldo = (saldo + ?), versao = (versao + 1)
     WHERE codCliente = ? AND versao = ?`,
     [valorTotal, codCliente, versao]
   );
 
-  if (rows.affectedRows === 1) {
+  if (atualizaSaldo.affectedRows === 1) {
     await connection.execute('COMMIT;');
     return true;
   } else {
@@ -73,3 +73,10 @@ Promise<boolean> => {
     return false;
   };
 };
+
+export default {
+  buscaSaldoConta,
+  buscaConta,
+  subtrairSaldoConta,
+  adicionarSaldoConta,
+}
