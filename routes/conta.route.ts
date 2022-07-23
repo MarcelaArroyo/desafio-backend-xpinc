@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { controllerContaDeposito, controllerContaSaque, controllerContaCliente } from '../src/controllers/conta.controller';
+import contaController from '../src/controllers/conta.controller';
 import { validacaoToken } from '../src/middlewares/token.middleware';
 import { contaValidacao } from '../src/middlewares/conta.middleware';
 
 const routes = Router();
 
-routes.post('/conta/deposito', validacaoToken, contaValidacao, controllerContaDeposito);
-routes.post('/conta/saque', validacaoToken, contaValidacao, controllerContaSaque);
-routes.get('/conta/:codCliente', validacaoToken, controllerContaCliente);
+routes.post('/conta/deposito', validacaoToken, contaValidacao, contaController.contaDeposito);
+routes.post('/conta/saque', validacaoToken, contaValidacao, contaController.contaSaque);
+routes.get('/conta/:codCliente', validacaoToken, contaController.contaCliente);
 
 export default routes;
