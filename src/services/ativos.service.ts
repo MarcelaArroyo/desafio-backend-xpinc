@@ -1,10 +1,10 @@
 import IAtivo from '../interfaces/IAtivo.interface';
 import IAtivos from '../interfaces/IAtivos.interface';
-import { buscarAtivoPeloCodAtivo, buscarCarteiraPeloCodCliente } from '../models/ativos.model';
+import ativosModel from '../models/ativos.model';
 
-export const ativoPeloCodAtivo = async (codAtivo: number):
+const ativoPeloCodAtivo = async (codAtivo: number):
 Promise<IAtivo | undefined> => {
-  const ativo = await buscarAtivoPeloCodAtivo(codAtivo);
+  const ativo = await ativosModel.buscarAtivoPeloCodAtivo(codAtivo);
   
   if (ativo.length === 0) return undefined
   
@@ -15,9 +15,9 @@ Promise<IAtivo | undefined> => {
   }
 };
 
-export const ativosPeloCodCliente = async (codCliente: number):
+const ativosPeloCodCliente = async (codCliente: number):
 Promise<IAtivos[] | undefined> => {
-  const ativos = await buscarCarteiraPeloCodCliente(codCliente);
+  const ativos = await ativosModel.buscarCarteiraPeloCodCliente(codCliente);
 
   if (ativos.length === 0) return undefined
   
@@ -32,3 +32,8 @@ Promise<IAtivos[] | undefined> => {
 
   return result as IAtivos[];
 };
+
+export default {
+  ativoPeloCodAtivo,
+  ativosPeloCodCliente
+}

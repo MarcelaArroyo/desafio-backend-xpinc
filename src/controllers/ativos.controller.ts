@@ -1,30 +1,35 @@
 import { Request, Response } from 'express';
-import { ativoPeloCodAtivo, ativosPeloCodCliente } from '../services/ativos.service';
+import ativosService from '../services/ativos.service';
 
-export const controllerAtivo = async (req: Request, res: Response): 
+const ativoPeloCodAtivo = async (req: Request, res: Response): 
 Promise<Response> => {
   try {
     const { codAtivo } = req.params;
-    const result = await ativoPeloCodAtivo(+codAtivo)
+    const ativo = await ativosService.ativoPeloCodAtivo(+codAtivo)
 
-    if (!result) return res.status(404).json({ message: 'Ativo não encontrado' });
+    if (!ativo) return res.status(404).json({ message: 'Ativo não encontrado' });
 
-    return res.status(200).json(result);
-  } catch (error: any) {
+    return res.status(200).json(ativo);
+  } catch (error: unknown | any) {
     return res.status(500).json({ message: error.message });
-  }
+  };
 };
 
-export const controllerAtivoCliente = async (req: Request, res: Response): 
+const ativosPeloCodCliente = async (req: Request, res: Response): 
 Promise<Response> => {
   try {
     const { codCliente } = req.params;
-    const result = await ativosPeloCodCliente(+codCliente)
+    const ativos = await ativosService.ativosPeloCodCliente(+codCliente)
 
-    if (!result) return res.status(404).json({ message: 'Cliente não encontrado' });
+    if (!ativos) return res.status(404).json({ message: 'Cliente não encontrado' });
 
-    return res.status(200).json(result);
-  } catch (error: any) {
+    return res.status(200).json(ativos);
+  } catch (error: unknown | any) {
     return res.status(500).json({ message: error.message });
-  }
+  };
 };
+
+export default {
+  ativoPeloCodAtivo,
+  ativosPeloCodCliente
+}
