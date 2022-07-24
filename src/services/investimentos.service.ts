@@ -21,7 +21,7 @@ Promise<IMessage> => {
   if (carteiraAtualizada) {
     await contaModel.subtrairSaldoConta(codCliente, valorTotal);
     await investimentosModel.adicionaCompraHistorico(codCliente, codAtivo, qtdeAtivo, valorTotal);
-    return { status: 200, message: 'Compra efetuada com sucesso'}
+    return { status: 201, message: 'Compra efetuada com sucesso'}
   } else {
     return { status: 404, message: 'Não foi possível realizar a compra do ativo' }
   };
@@ -42,7 +42,7 @@ Promise<IMessage> => {
   if (carteiraAtualizada) {
     await contaModel.adicionarSaldoConta(codCliente, valorTotal);
     await investimentosModel.adicionaVendaHistorico(codCliente, codAtivo, qtdeAtivo, valorTotal);
-    return { status: 200, message: 'Venda efetuada com sucesso'}
+    return { status: 201, message: 'Venda efetuada com sucesso'}
   } else {
     return { status: 404, message: 'Não foi possível realizar a venda do ativo' }
   };
