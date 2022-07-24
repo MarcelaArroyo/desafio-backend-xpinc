@@ -12,6 +12,5 @@ app.use(investimentosRoutes);
 app.use(ativosRoutes);
 app.use(contaRoutes);
 app.use(autorizacaoRoutes);
-app.use(httpErroMiddleware);
 
 export default app;
