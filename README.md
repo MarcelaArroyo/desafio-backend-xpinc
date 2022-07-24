@@ -176,5 +176,4 @@ Após as verificações iniciais, serão validados também:
   - Busca no banco de dados a conta do cliente pelo codCliente.
   - Se a conta não for encontrada retorna `status 404` com a mensagem `Conta não encontrada`.
   - Se a conta for encontrada retorna `status 200` e um `JSON` contendo {codCliente, saldo}.
-  
-  
+

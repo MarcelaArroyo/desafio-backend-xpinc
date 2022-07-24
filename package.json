@@ -6,7 +6,6 @@
   "scripts": {
     "start": "ts-node index.ts",
     "dev": "nodemon index.ts",
-    "testJs": "mocha ./tests/**/*$NAME*.test.js --exit",
     "test": "mocha --require ts-node/register tests/**/*.test.ts --exit"
   },
   "repository": {
