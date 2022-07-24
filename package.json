@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node index.ts",
+    "start": "npm run heroku",
     "dev": "nodemon index.ts",
-    "testJs": "mocha ./tests/**/*$NAME*.test.js --exit",
+    "heroku": "ts-node index.ts",
     "test": "mocha --require ts-node/register tests/**/*.test.ts --exit"
   },
   "repository": {
