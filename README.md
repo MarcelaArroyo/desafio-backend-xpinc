@@ -22,6 +22,12 @@ buscar todos os ativos do cliente pelo codCliente, depositar e sacar dinheiro, e
  - docker-compose up -d
  - pedir o bash: docker exec -it desafio_backend_xp bash
  - npm install
+ - configurar as variáveis de ambiente no .env:
+   MYSQL_HOST
+   MYSQL_USER
+   MYSQL_PASSWORD
+ - executar os comandos do arquivo InvestimentosAcoes no
+ MySQL Workbench para criar o database.
  - npm start
  - npm run dev (para subir o projeto com nodemon)
  - npm run test
