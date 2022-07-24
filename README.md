@@ -35,6 +35,7 @@ buscar todos os ativos do cliente pelo codCliente, depositar e sacar dinheiro, e
 <h2>Endpoints:</h2>
 
 <h3>Endpoint: POST /auth</h3>
+
     - Middleware para validar se o email e password recebidos do body existem, são do tipo string, email possui
     o formado correto e password possui mais de 6 caracteres.
     - Verifica no banco de dados se o cliente com o email e password existe. Se o cliente não existe, a aplicação
@@ -42,6 +43,7 @@ buscar todos os ativos do cliente pelo codCliente, depositar e sacar dinheiro, e
     da biblioteca JasonWebToken e esse token é retornado com um status 200.
 
 <h3>Endpoint: POST investimentos/comprar</h3>
+
   - Middleware que faz a verificação do token através da biblioteca JasonWebToken e verifica se codCliente,
   codAtivo e qtdeAtivo recebidos do body existem, são do tipo number e se não são negativos ou igual a zero.
   - Verificações:
@@ -62,6 +64,7 @@ buscar todos os ativos do cliente pelo codCliente, depositar e sacar dinheiro, e
    Se algo deu errado é retornado um status 404 com a mensagem 'Não foi possível realizar a compra do ativo'.
 
 <h3>Endpoint: POST investimentos/vender</h3>
+
   - Middleware que faz a verificação do token através da biblioteca JasonWebToken e verifica se codCliente,
   codAtivo e qtdeAtivo recebidos do body existem, são do tipo number e se não são negativos ou igual a zero.
   - Verificações:
@@ -75,17 +78,20 @@ buscar todos os ativos do cliente pelo codCliente, depositar e sacar dinheiro, e
   é retornado um status 200 com a mensagem 'Venda efetuada com sucesso'.
 
 <h3>Endpoint: GET ativos/:codAtivo</h3>
+
   - Busca no bando de dados o ativo pelo seu codAtivo.
   - Se não for encontrado o respectivo ativo é retornado um status 404 e a mensagem 'Ativo não encontrado'.
   - Se o ativo for encontrado é retornado um status 200 e um json {codAtivo, qtdeAtivo, valor}.
 
 <h3>Endpoint: GET ativos/cliente/:codCliente</h3>
+
   - Busca no bando de dados todos os ativos que o cliente possui pelo codCliente.
   - Se o cliente não for encontrado retorna um status 404 com a mensagem 'Cliente não encontrado'.
   - Se o cliente for encontrado retorna um status 200 e um json, exemplo:
   [{codCliente: 1, codAtivo: 1, qtdeAtivo: 10, valor: 10}], {codCliente: 1, codAtivo: 2, qtdeAtivo: 20, valor: 20} ... {}].
 
 <h3>Endpoint: POST conta/deposito</h3>
+
   - Middleware que faz a verificação do token através da biblioteca JasonWebToken e verifica se codCliente,
   e valor recebidos do body existem, são do tipo number e se não são negativos ou igual a zero.
   - O saldo do cliente é atualizado na sua conta, mas para realizar a atualização é utilizado o lock otimista,
@@ -94,6 +100,7 @@ buscar todos os ativos do cliente pelo codCliente, depositar e sacar dinheiro, e
   Se o saldo for atualizado retorna status 201 com a mensagem 'Depósito no valor de ${valor} reais feito com sucesso. Novo saldo de ${saldo}'.
 
 <h3>Endpoint: POST conta/saque</h3>
+
   - Middleware que faz a verificação do token através da biblioteca JasonWebToken e verifica se codCliente,
   e valor recebidos do body existem, são do tipo number e se não são negativos ou igual a zero.
   - Verifica se o cliente possui saldo suficiente em sua conta para poder realizar o saque. Se o saldo
@@ -103,8 +110,8 @@ buscar todos os ativos do cliente pelo codCliente, depositar e sacar dinheiro, e
   Se não, atualiza o saldo na conta e retorna um status 201 com a mensagem 'Saque no valor de ${valor} reais feito com sucesso. Novo saldo de ${novoSaldo} reais'.
 
 <h3>Endpoint: GET conta/:codCliente</h3>
+
   - Middleware para verificar o token atráves da biblioteca JasonWebToken.
   - Busca no banco de dados a conta do cliente pelo codCliente.
   - Se a conta não for encontrada retorna status 404 'Conta não encontrada'.
   - Se a conta for encontrada retorna status 200 e um json {codCliente, saldo}.
-  
